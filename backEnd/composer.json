@@ -1,0 +1,15 @@
+{
+    "name": "task-timer/back-end",
+    "autoload": {
+        "psr-4": {
+            "TaskTimer\\BackEnd\\": "src/"
+        }
+    },
+    "authors": [
+        {
+            "name": "Sergey",
+            "email": "S.prihodchenko@yandex.ru"
+        }
+    ],
+    "require": {}
+}
