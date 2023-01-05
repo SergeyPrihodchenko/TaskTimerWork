@@ -1,7 +1,6 @@
 <?php
 
 use TaskTimer\BackEnd\Class\HTTP\actionHTTP\DeleteTask;
-use TaskTimer\BackEnd\Class\HTTP\actionHTTP\GetIdTask;
 use TaskTimer\BackEnd\Class\HTTP\actionHTTP\GetTasks;
 use TaskTimer\BackEnd\Class\HTTP\actionHTTP\SaveTask;
 use TaskTimer\BackEnd\Class\HTTP\Request\Request;
@@ -16,14 +15,14 @@ $request = new Request(
 );
 
 try {
-    $path = $request->path();
+    $method = $request->method();
 } catch (Exception $e) {
-    (new ErrorResponse($e->getMessage()));
+    (new ErrorResponse($e->getMessage()))->send();
     return;
 }
 
 try {
-    $method = $request->method();
+    $header = $request->header('ACTION');
 } catch (Exception $e) {
     (new ErrorResponse($e->getMessage()))->send();
     return;
@@ -31,9 +30,9 @@ try {
 
 $routes = [
     'POST' => [
-        '/task/save' => SaveTask::class,
-        '/task/delete' => DeleteTask::class,
-        '/' => GetTasks::class,
+        'SAVE' => SaveTask::class,
+        'DELETE' => DeleteTask::class,
+        'GET_TASK' => GetTasks::class,
     ]
 ];
 
@@ -42,11 +41,11 @@ if(!array_key_exists($method, $routes)) {
     return;
 }
 
-if(!array_key_exists($path, $routes[$method])) {
-    (new ErrorResponse("Route not found: $method $path"))->send();
+if(!array_key_exists($header, $routes[$method])) {
+    (new ErrorResponse("Route not found: $method $header"))->send();
 }
 
-$actionClassName = $routes[$method][$path];
+$actionClassName = $routes[$method][$header];
 
 $action = $container->get($actionClassName);
 

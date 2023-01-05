@@ -4,17 +4,11 @@ namespace TaskTimer\BackEnd\Class\Task;
 
 class Task {
     function __construct(
-        private int $id_task,
         private string $text,
         private string $date
     )
     {
         
-    }
-
-    public function id_task(): int
-    {
-        return $this->id_task;
     }
 
     public function text(): string 
@@ -42,8 +36,8 @@ class Task {
     
     }
 
-    static function createTask(int $id, string $text) {
-        return new Task($id, Task::validatorText($text), Task::genDate());
+    static function createTask(string $text) {
+        return new Task(Task::validatorText($text), Task::genDate());
     }
 }
 

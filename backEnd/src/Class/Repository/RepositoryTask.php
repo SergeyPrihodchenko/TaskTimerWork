@@ -16,9 +16,8 @@ class RepositoryTask {
 
     public function save(Task $task): void 
     {
-        $statement = $this->connect->prepare("INSERT INTO tasks (id_task, name, date_started) VALUES (:id_task, :text, :date);");
+        $statement = $this->connect->prepare("INSERT INTO tasks (name, date_started) VALUES (:text, :date);");
         $statement->execute([
-            ':id_task' => $task->id_task(),
             ':text' => $task->text(),
             ':date' => $task->date()
         ]);

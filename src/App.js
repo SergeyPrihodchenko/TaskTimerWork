@@ -1,62 +1,81 @@
 import { Button, TextField } from '@mui/material';
-import { useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import './App.css';
 
 const App = () => {
 
+  const [tasks, setTasks] = useState([]);
   const [value, setValue] = useState('');
-
-
+  const [dummy, setDummy] = useState({});
   const handleChange = (e) => {
-        setValue(e.target.value);
-    }
-
-  const getTasks = async () => {
-    const response = await fetch('./backEnd/index.php', {
-      method: 'POST'
-    });
-    const result = await response.json();
-
-    return result;
+      setValue(e.target.value);
   }
 
-  const [tasks, setTasks] = useState(getTasks());
+  const saveTask = () => {
+     fetch('./backEnd/index.php', {
+      method: 'POST',
+      headers: {
+        'ACTION': 'SAVE'
+      },
+      body: JSON.stringify({name: value})
+    })
+    .then(response => {
+      return response.json()
+    })
+    .then(res => {
+      console.log(res);
+      setValue('');
+      setDummy({});
+    })
+  }
 
-  const addTask = async () => {
+  const deleteTask = (e) => {
+     fetch('./backEnd/index.php', {
+      method: 'POST',
+      headers: {
+        'ACTION': 'DELETE'
+      },
+      body: JSON.stringify({id_task: e.target.id})
+    })
+    .then(response => {
+      return response.json();
+    })
+    .then(res => {
+      console.log(res);
+      setDummy({});
+    })
+  }
 
-        const data = {
-          name: value
-        }
-        const response = await fetch('./backEnd/index.php', {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json'
-          },
-          body: JSON.stringify(data)
-        });
-        setValue('');
-        const result = await response.json();
-        console.log(result);
-        setTasks(getTasks());
-    }
-
-    const deleteTask = async (e) => {
-      await fetch('./backEnd/index.php', {
-        method: "POST",
-        body: JSON.stringify({id: e.target.id})
-      })
-      setTasks(getTasks());
-    }
-
+  useEffect(() => {
+    fetch('./backEnd/index.php', {
+      method: 'POST',
+      headers: {
+        'ACTION': 'GET_TASK'
+      },
+    })
+    .then(response => {
+      return response.json();
+    })
+    .then(res => {
+      console.log(res);
+      setTasks(res.data.tasks);
+    });
+  }, [dummy]);
   
+  const renderTask = useCallback((el, key) => {
+      return <div className='blockText' key={key}><span className='taskText' key={key}>{key + 1} : {el.name}</span><span className='date_started' key={key}>{el.date_started}</span><span onClick={deleteTask} className='deleteTask' id={el.id} key={key}>X</span></div>
+  },[]);
+
   return (
     <div className="App">
       <div className='inputBlock'>
-        <TextField style={{marginRight: '5px'}} id="outlined-basic" label="Task   name" variant="outlined" value={value} onChange={handleChange}/>
-        <Button variant="contained" onClick={addTask}>Add task</Button>
+        <TextField style={{marginRight: '5px'}} id="outlined-basic" label="Task   name" variant="outlined" onChange={handleChange} value={value}/>
+        <Button variant="contained" onClick={saveTask}>Add task</Button>
       </div>
       <div className='blockTasks'>
-          {tasks.map((el, key) => {return <div className='blockText' key={key}><span className='taskText' key={el.id}>{`${key + 1}: ${el}`}</span><span onClick={deleteTask} key={el.id} id={el.id} className='deletTask'>X</span></div>}) || null}
+        <ul>
+          {tasks.map(renderTask)}
+        </ul>
       </div>
     </div>
   );

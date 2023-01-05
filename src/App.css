@@ -17,6 +17,9 @@
 }
 
 .blockText {
+  display: flex;
+  justify-content: space-around;
+  align-items: center;
   border: solid 1px black;
   width: 400px;
   padding: 20px;
@@ -32,7 +35,7 @@
   font-weight: 500;
 }
 
-.deletTask {
+.deleteTask {
   position: absolute;
   right: 15px;
   top: 18px;
@@ -40,6 +43,6 @@
   font-size: 22px;
 }
 
-.deletTask:hover {
+.deleteTask:hover {
   color: red;
 }

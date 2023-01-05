@@ -21,9 +21,8 @@ class SaveTask {
     public function handle(Request $request): Response
     {
         try {
-            $id_task = $request->jsonBodyField('id_task');
-            $text = $request->jsonBodyField('text');
-            if ($id_task === null && $text === null) {
+            $text = $request->jsonBodyField('name');
+            if ($text === null) {
                 throw new Exception("Not data in: id_task or text");
             }
         } catch (Exception $e) {
@@ -31,7 +30,7 @@ class SaveTask {
         }
 
         try {
-            $this->repository->save(Task::createTask($id_task, $text));
+            $this->repository->save(Task::createTask($text));
         } catch (Exception $e) {
             return new ErrorResponse($e->getMessage());
         }
